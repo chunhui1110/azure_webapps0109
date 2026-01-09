@@ -1,40 +1,64 @@
 <!DOCTYPE html>
-<html lang="utf-8">
-    <head>
-        <title>糖尿病分析預判系統</title>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <!-- Latest compiled and minified CSS -->
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>糖尿病風險評估系統</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f0f2f5; padding-top: 50px; }
+        .form-container { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .btn-primary { background-color: #0062cc; border: none; }
+        .header-section { margin-bottom: 30px; text-align: center; }
+    </style>
+</head>
+<body>
 
-        <!-- jQuery library -->
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="form-container">
+                <div class="header-section">
+                    <h2 class="fw-bold text-primary">健康風險評估表單</h2>
+                    <p class="text-muted">請輸入以下生理數據以進行 AML 模型預測</p>
+                </div>
+                
+                <form action="/aml" method="POST">
+                    <div class="mb-3">
+                        <label for="p1" class="form-label">年齡 (Age)</label>
+                        <input type="number" class="form-control" id="p1" name="p1" placeholder="例如: 45" required>
+                    </div>
 
-        <!-- Latest compiled JavaScript -->
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-    </head>
-    <body>
-        <div class="container">
-        <h2>糖尿病分析預判系統</h2>
-        <p>請輸入你的相關資料，以便進行分析診斷。</p>
-        <form action="aml" method="post">
-        <div class="form-group">
-            <label for="p1">AGE</label>
-            <input type="text" class="form-control" name="p1">
-            <label for="p2">SEX</label>
-            <input type="text" class="form-control" name="p2">
-            <label for="p3">BMI</label>
-            <input type="text" class="form-control" name="p3">
-            <label for="p4">BloodPressure</label>
-            <input type="text" class="form-control" name="p4">
-            <label for="p5">Glucose</label>
-            <input type="text" class="form-control" name="p5">
-            <label for="p6">Insulin</label>
-            <input type="text" class="form-control" name="p6">
-        </div>   
-        <button type="submit" class="btn btn-default">送出</button>
-        </form>    
+                    <div class="mb-3">
+                        <label for="p3" class="form-label">身體質量指數 (BMI)</label>
+                        <input type="number" step="0.1" class="form-control" id="p3" name="p3" placeholder="例如: 28.5" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="p4" class="form-label">舒張壓 (BloodPressure)</label>
+                        <input type="number" class="form-control" id="p4" name="p4" placeholder="例如: 80" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="p5" class="form-label">口服葡萄糖耐量試驗血糖值 (Glucose)</label>
+                        <input type="number" class="form-control" id="p5" name="p5" placeholder="例如: 120" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="p6" class="form-label">2小時血清胰島素 (Insulin)</label>
+                        <input type="number" class="form-control" id="p6" name="p6" placeholder="例如: 94" required>
+                    </div>
+
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg">提交並分析結果</button>
+                        <button type="reset" class="btn btn-outline-secondary">清除重填</button>
+                    </div>
+                </form>
+            </div>
+            <p class="text-center mt-4 text-secondary"><small>© 2024 Azure Web App + Flask 應用演示</small></p>
+        </div>
     </div>
+</div>
 
-    </body>    
+</body>
 </html>
