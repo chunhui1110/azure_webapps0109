@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>糖尿病風險評估系統</title>
+    <title>XYZ 金融信用風險評估系統</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body { background-color: #f0f2f5; padding-top: 50px; }
-        .form-container { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
-        .btn-primary { background-color: #0062cc; border: none; }
-        .header-section { margin-bottom: 30px; text-align: center; }
+        body { background-color: #f4f7f6; padding-top: 50px; }
+        .card { border: none; border-radius: 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+        .btn-primary { background-color: #1a237e; border: none; }
+        .btn-primary:hover { background-color: #283593; }
     </style>
 </head>
 <body>
@@ -17,45 +17,33 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-6">
-            <div class="form-container">
-                <div class="header-section">
-                    <h2 class="fw-bold text-primary">健康風險評估表單</h2>
-                    <p class="text-muted">請輸入以下生理數據以進行 AML 模型預測</p>
+            <div class="card p-4">
+                <div class="text-center mb-4">
+                    <h2 class="fw-bold text-dark">信用風險決策系統</h2>
+                    <p class="text-muted">請輸入客戶信用資訊以進行即時違約評估</p>
                 </div>
                 
                 <form action="/aml" method="POST">
                     <div class="mb-3">
-                        <label for="p1" class="form-label">年齡 (Age)</label>
-                        <input type="number" class="form-control" id="p1" name="p1" placeholder="例如: 45" required>
+                        <label class="form-label">客戶年齡 (Age)</label>
+                        <input type="number" name="p1" class="form-control" placeholder="例如: 35" required>
                     </div>
-
                     <div class="mb-3">
-                        <label for="p3" class="form-label">身體質量指數 (BMI)</label>
-                        <input type="number" step="0.1" class="form-control" id="p3" name="p3" placeholder="例如: 28.5" required>
+                        <label class="form-label">負債比 (Debt Ratio)</label>
+                        <input type="number" step="0.01" name="p2" class="form-control" placeholder="例如: 0.35" required>
                     </div>
-
                     <div class="mb-3">
-                        <label for="p4" class="form-label">舒張壓 (BloodPressure)</label>
-                        <input type="number" class="form-control" id="p4" name="p4" placeholder="例如: 80" required>
+                        <label class="form-label">月收入 (Monthly Income)</label>
+                        <input type="number" name="p3" class="form-control" placeholder="例如: 50000" required>
                     </div>
-
                     <div class="mb-3">
-                        <label for="p5" class="form-label">口服葡萄糖耐量試驗血糖值 (Glucose)</label>
-                        <input type="number" class="form-control" id="p5" name="p5" placeholder="例如: 120" required>
+                        <label class="form-label">逾期次數 (Number of Past Due)</label>
+                        <input type="number" name="p4" class="form-control" placeholder="例如: 0" required>
                     </div>
-
-                    <div class="mb-3">
-                        <label for="p6" class="form-label">2小時血清胰島素 (Insulin)</label>
-                        <input type="number" class="form-control" id="p6" name="p6" placeholder="例如: 94" required>
-                    </div>
-
-                    <div class="d-grid gap-2 mt-4">
-                        <button type="submit" class="btn btn-primary btn-lg">提交並分析結果</button>
-                        <button type="reset" class="btn btn-outline-secondary">清除重填</button>
-                    </div>
+                    
+                    <button type="submit" class="btn btn-primary w-100 btn-lg">開始風險評估</button>
                 </form>
             </div>
-            <p class="text-center mt-4 text-secondary"><small>© 2024 Azure Web App + Flask 應用演示</small></p>
         </div>
     </div>
 </div>

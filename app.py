@@ -1,47 +1,31 @@
 from flask import Flask, request, render_template
 import urllib.request
 import json
-import os
 
 app = Flask(__name__)
 
-# 首頁：顯示表單頁面
 @app.route('/')
 def index():
     return render_template("form.html")
 
-# 測試路徑
-@app.route('/hello/<name>')
-def hello(name):
-    return "Hello, " + name + "!!!"
-
-# 處理預測邏輯
-@app.route('/aml', methods=['GET', 'POST'])
+@app.route('/aml', methods=['POST'])
 def aml():
-    # 1. 接收前端傳來的資料 (與 form.html 的 name 屬性對應)
-    try:
-        p1 = request.values.get('p1', 0) # Age
-        p3 = request.values.get('p3', 0) # BMI
-        p4 = request.values.get('p4', 0) # BloodPressure
-        p5 = request.values.get('p5', 0) # Glucose
-        p6 = request.values.get('p6', 0) # Insulin
-    except KeyError:
-        return "表單資料讀取失敗，請確認所有欄位皆已填寫。"
+    # 1. 接收前端 4 項特徵資料
+    age = request.values.get('p1')
+    debt_ratio = request.values.get('p2')
+    income = request.values.get('p3')
+    past_due = request.values.get('p4')
 
-    # 2. 組裝成 Azure ML 端點所需的 JSON 格式
+    # 2. 組裝成 AML 端點所需的 JSON 格式 (對應你的模型欄位名稱)
     data = {
         "Inputs": {
             "input1": [
                 {
-                    "Pregnancies": 6,
-                    "Glucose": p5,
-                    "BloodPressure": p4,
-                    "SkinThickness": 35,
-                    "Insulin": p6,
-                    "BMI": p3,
-                    "DiabetesPedigreeFunction": 0.627,
-                    "Age": p1,
-                    "Outcome": 1
+                    "Age": age,
+                    "DebtRatio": debt_ratio,
+                    "MonthlyIncome": income,
+                    "NumberOfTime30-59DaysPastDueNotWorse": past_due,
+                    "SeriousDlqin2yrs": 0  # 預設預測目標
                 },
             ],
         },
@@ -50,65 +34,54 @@ def aml():
 
     body = str.encode(json.dumps(data))
 
-    # 3. 設定 Azure ML 端點資訊
+    # 3. Azure ML 端點配置 (請替換為你的實際端點資訊)
     url = 'http://2285a820-842e-4f76-9be0-2506bcb9c71b.eastasia.azurecontainer.io/score'
     api_key = 'ijeNHrFOhkoR5F90LgD1Scfdh1ewSCKx'
     headers = {
         "Content-Type": "application/json",
-        "Accept": "application/json",
-        "Authorization": "Bearer " + api_key
+        "Authorization": f"Bearer {api_key}"
     }
 
     req = urllib.request.Request(url, body, headers)
 
-    # 4. 呼叫端點並處理回傳結果
-    # 初始化 HTML 字串與結果容器
-    response_content = ""
-    result_text = ""
-    
     try:
         response = urllib.request.urlopen(req)
         result = json.loads(response.read())
         
-        # 根據回傳結構抓取 Scored Labels
-        # 這裡假設回傳格式為：result['Results']['WebServiceOutput0'][0]['Scored Labels']
-        scored_label = str(result['Results']['WebServiceOutput0'][0]['Scored Labels'])
+        # 4. 解析預測結果與機率
+        # 假設 AML 回傳包含 'Scored Labels' 與 'Scored Probabilities'
+        prediction = result['Results']['WebServiceOutput0'][0]
+        label = str(prediction['Scored Labels'])
+        # 取得違約機率並轉為百分比
+        prob = float(prediction['Scored Probabilities'])
         
-        if scored_label == "1.0":
-            result_text = "<h3 style='color:red;'>診斷結果：陽性 (高風險)</h3>"
-        else:
-            result_text = "<h3 style='color:green;'>診斷結果：陰性 (低風險)</h3>"
-            
-    except urllib.error.HTTPError as error:
-        result_text = f"<h3 style='color:gray;'>預測失敗，錯誤代碼: {error.code}</h3>"
-        print(error.info())
-        print(json.loads(error.read().decode("utf8", 'ignore')))
-    except Exception as e:
-        result_text = f"<h3 style='color:gray;'>發生系統錯誤: {str(e)}</h3>"
+        risk_class = "高風險" if label == "1" else "低風險"
+        risk_color = "danger" if label == "1" else "success"
+        prob_display = f"{prob * 100:.2f}%"
 
-    # 5. 回傳簡單的結果頁面
-    html_template = f"""
+        result_html = f"""
+        <div class="card p-4 text-center shadow">
+            <h2 class="text-{risk_color}">預測結果：{risk_class}</h2>
+            <hr>
+            <h4>預測違約機率：<span class="badge bg-secondary">{prob_display}</span></h4>
+            <div class="mt-4"><a href="/" class="btn btn-outline-primary">重新評估</a></div>
+        </div>
+        """
+    except Exception as e:
+        result_html = f"<div class='alert alert-danger'>呼叫端點失敗：{str(e)}</div>"
+
+    # 回傳結果頁面佈局
+    return f"""
     <!DOCTYPE html>
     <html>
     <head>
         <meta charset="UTF-8">
-        <title>預測結果</title>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+        <title>評估結果</title>
     </head>
-    <body class="container py-5 text-center">
-        <div class="card shadow p-4">
-            <h2>依據您輸入的參數，經過決策模型比對：</h2>
-            <hr>
-            {result_text}
-            <div class="mt-4">
-                <a href="/" class="btn btn-primary">返回重新輸入</a>
-            </div>
-        </div>
-    </body>
+    <body class="container py-5">{result_html}</body>
     </html>
     """
-    return html_template
 
 if __name__ == "__main__":
-    # 在本機測試時開啟 debug，部署到 Azure 後通常由 gunicorn 啟動
-    app.run(host='0.0.0.0', port=5000)
+    app.run()
