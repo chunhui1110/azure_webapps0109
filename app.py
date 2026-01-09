@@ -37,9 +37,9 @@ def aml():
 
     body = str.encode(json.dumps(data))
 
-    url = 'http://7ac69e26-f176-43dc-b695-668fd9800c4b.eastasia.azurecontainer.io/score'
+    url = 'http://2285a820-842e-4f76-9be0-2506bcb9c71b.eastasia.azurecontainer.io/score'
 
-    api_key = 'vtGt7uknpxFHb8P40n1AimaYMFvP2wdy'
+    api_key = 'ijeNHrFOhkoR5F90LgD1Scfdh1ewSCKx'
     headers = {
         "Content-Type": "application/json",
         "Accept": "application/json",
